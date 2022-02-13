@@ -7,10 +7,11 @@ import { UserRegisterResponseDTO } from "../models/dtos/user-register-response.d
 import { UserVerifyDTO } from "../models/dtos/user-verify.dto";
 import { IUserLoginResponse } from "../models/interfaces/user-login-response.interface";
 import { UserLoginBasicDTO } from "../models/dtos/user-login-basic.dto";
-import { UserEntity } from "../entities/user.entity";
 import { UserPasswordResetRequestDTO } from "../models/dtos/user-password-reset-request.dto";
 import { UserPasswordResetVerifyRequestDTO } from "../models/dtos/user-password-reset-verify-request.dto";
 import { LogService } from "../service/log.service";
+import { AuthUtil } from "../util/auth.util";
+import { UnauthorizedError } from "../errors/unauthorized.error";
 
 /**
  * Various auth related
@@ -26,20 +27,18 @@ export class AuthManager {
     // Get the user with the specified email if they exist.
     const user = await UserService.getUserByEmail(userLoginDTO.email);
     if (!user) {
-      // TODO: Make this an auth error.
-      throw new Error(
+      throw new UnauthorizedError(
         "Your login information was incorrect. Please try again!"
       );
     } else {
-      AuthManager.validateUserStatusBeforeIssuingToken(user);
+      AuthUtil.validateUserStatusBeforeIssuingToken(user);
       // Make sure the password is valid
       const isValidPassword = await CryptoUtil.verifyHash(
         userLoginDTO.password,
         user.hash
       );
       if (!isValidPassword) {
-        // TODO: Make this an auth error.
-        throw new Error(
+        throw new UnauthorizedError(
           "Your login information was incorrect. Please try again!"
         );
       } else {
@@ -108,7 +107,9 @@ export class AuthManager {
       userVerifyDTO.verificationToken
     );
     if (decodedUserId !== userVerifyDTO.id) {
-      throw new Error("The verification token could not be validated!");
+      throw new UnauthorizedError(
+        "The verification token could not be validated!"
+      );
     } else {
       const user = await UserService.markUserVerified(decodedUserId);
       await LogService.newUserVerified(user.id, user.email);
@@ -126,12 +127,17 @@ export class AuthManager {
     const decodedUserId = TokenUtil.validateUserRefreshToken(refreshToken);
     const user = await UserService.getUserByID(decodedUserId);
     if (!user) {
-      throw new Error(
+      throw new UnauthorizedError(
         "Your refresh request could not be completed! Please try logging in again!"
       );
     } else {
-      AuthManager.validateUserStatusBeforeIssuingToken(user);
-      return TokenUtil.generateUserAccessToken(user.id, user.email);
+      AuthUtil.validateUserStatusBeforeIssuingToken(user);
+      const accessToken = TokenUtil.generateUserAccessToken(
+        user.id,
+        user.email
+      );
+      await UserService.updateUserLastLoginDateToNow(user.id);
+      return accessToken;
     }
   }
 
@@ -144,11 +150,11 @@ export class AuthManager {
   ): Promise<UserRegisterResponseDTO> {
     const user = await UserService.getUserByEmail(resetInfo.email);
     if (!user) {
-      throw new Error(
+      throw new UnauthorizedError(
         "An error occurred when attempting to generate a password reset request. Please try again!"
       );
     } else {
-      AuthManager.validateUserStatusBeforeIssuingToken(user, true);
+      AuthUtil.validateUserStatusBeforeIssuingToken(user, true);
       // Generate a verification token
       const verificationToken = TokenUtil.generateUserVerificationToken(
         user.id
@@ -172,15 +178,17 @@ export class AuthManager {
       resetInfo.verificationToken
     );
     if (decodedUserId !== resetInfo.id) {
-      throw new Error("The verification token could not be validated!");
+      throw new UnauthorizedError(
+        "The verification token could not be validated!"
+      );
     } else {
       const user = await UserService.getUserByID(resetInfo.id);
       if (!user) {
-        throw new Error(
+        throw new UnauthorizedError(
           "An error occurred when attempting to generate a password reset request. Please try again!"
         );
       } else {
-        AuthManager.validateUserStatusBeforeIssuingToken(user, true);
+        AuthUtil.validateUserStatusBeforeIssuingToken(user, true);
         // Hash the new password
         const hash = await CryptoUtil.hashMessage(resetInfo.password);
         await UserService.updateUserHash(user.id, hash);
@@ -188,32 +196,5 @@ export class AuthManager {
         return;
       }
     }
-  }
-
-  /**
-   * Ensure that a user status is clear for being issued a new access token.
-   * @param user The user we want to check.
-   * @param isPasswordReset If we are using this function on password reset--we want to allow the user to be unverified.
-   * @private
-   */
-  private static validateUserStatusBeforeIssuingToken(
-    user: UserEntity,
-    isPasswordReset: boolean = false
-  ): boolean {
-    // We first need to make sure this user is not banned, archived, or marked unverified.
-    if (user.isBanned) {
-      throw new Error(`User Is Banned: [${user.banReason}]`);
-    }
-    if (!isPasswordReset && !user.verified) {
-      throw new Error(
-        "Please check your email to finish the verification process before trying to login!"
-      );
-    }
-    if (user.archivedAt) {
-      throw new Error(
-        "This user is no longer active. Please reach out to support if you believe this to be an error!"
-      );
-    }
-    return true;
   }
 }

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { AuthRouter } from "./auth.router";
 import { IRoutable } from "./routable.interface";
 import { HealthRouter } from "./health.router";
+import { AdminRouter } from "./admin.router";
 
 /**
  * Handles build all of our routes and combining each
@@ -16,6 +17,7 @@ export class AppRouterFactory {
     const routers: IRoutable[] = [
       new HealthRouter("/health"),
       new AuthRouter("/auth"),
+      new AdminRouter("/admin"),
     ];
 
     for (const router of routers) {

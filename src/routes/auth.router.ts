@@ -79,7 +79,7 @@ export class AuthRouter extends BaseRouter implements IRoutable {
   ) {
     try {
       if (!req.header("Authorization")) {
-        throw new Error("Your login request invalid!");
+        throw new Error("Your login request was invalid!");
       }
       const loginDetails = AuthUtil.getUserLoginBasicDTOFromAuthHeader(
         req.header("Authorization") as string

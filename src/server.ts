@@ -2,6 +2,7 @@ import express from "express";
 import helmet from "helmet";
 import { AppRouterFactory } from "./routes";
 import { AppDatabase } from "./database/database";
+import { ErrorHandlerMiddleware } from "./middleware/error-handler.middleware";
 
 /**
  * The AppServer ties everything together that the application will use.
@@ -25,6 +26,10 @@ export class AppServer {
 
     // Setup Routes
     app.use(AppRouterFactory.initializeRoutes());
+
+    // Setup Error Handling
+    // @ts-ignore
+    app.use(ErrorHandlerMiddleware.handleErrors);
 
     // Start listening...
     let { APP_PORT } = process.env;
