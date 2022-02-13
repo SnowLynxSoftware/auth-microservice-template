@@ -9,6 +9,50 @@ import { LogEntity } from "../entities/log.entity";
 
 export class LogService {
   /**
+   * Log a user banned event.
+   * @param userId The ID of the user we are banning.
+   * @param email The email of the user that was banned.
+   * @param bannedById The ID of the user that performed the ban.
+   */
+  public static async userBanned(
+    userId: string,
+    email: string,
+    bannedById: string
+  ): Promise<void> {
+    try {
+      await LogService.logEvent(
+        LogType.USER_BANNED,
+        `User Banned: [${userId} | ${email}] by [${bannedById}]`
+      );
+    } catch (error: any) {
+      console.error(error.message);
+      return;
+    }
+  }
+
+  /**
+   * Log a user unbanned event.
+   * @param userId The ID of the user we are unbanning.
+   * @param email The email of the user that was unbanned.
+   * @param unbannedById The ID of the user that performed the unban.
+   */
+  public static async userUnbanned(
+    userId: string,
+    email: string,
+    unbannedById: string
+  ): Promise<void> {
+    try {
+      await LogService.logEvent(
+        LogType.USER_UNBANNED,
+        `User Unbanned: [${userId} | ${email}] by [${unbannedById}]`
+      );
+    } catch (error: any) {
+      console.error(error.message);
+      return;
+    }
+  }
+
+  /**
    * Log a user password change event.
    * @param userId The ID of the user we are changing the password for.
    * @param email The email of the user that changed their password.

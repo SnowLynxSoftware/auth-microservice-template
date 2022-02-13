@@ -95,4 +95,44 @@ export class UserService {
       return user.save();
     }
   }
+
+  /**
+   * Ban a user account from access the systems by their ID and give a reason.
+   * This will prevent any future logins to the system with the specified email address.
+   * @param userId The ID of the user we want to ban.
+   * @param reason The reason for the ban that might be shown to the user if they attempt to login (or for our historical logs.)
+   */
+  public static async banUserByIdWithReason(
+    userId: string,
+    reason: string
+  ): Promise<UserEntity> {
+    const user = await UserService.getUserByID(userId);
+    if (!user) {
+      throw new Error("User could not be found!");
+    } else {
+      user.isBanned = true;
+      user.banReason = reason;
+      user.archivedAt = new Date(Date.now());
+      return user.save();
+    }
+  }
+
+  /**
+   * Unban a user account.
+   * @param userId The ID of the user we want to unban.
+   */
+  public static async unbanUserById(userId: string): Promise<UserEntity> {
+    const user = await UserService.getUserByID(userId);
+    if (!user) {
+      throw new Error("User could not be found!");
+    } else {
+      user.isBanned = false;
+      user.banReason = "";
+      // When a user is unbanned--we require them to go through a "Forgot Your Password" reset process.
+      user.verified = false;
+      // @ts-ignore
+      user.archivedAt = null;
+      return user.save();
+    }
+  }
 }

@@ -36,4 +36,9 @@ export class UserEntity extends AppBaseEntity {
   // This also updates anytime a token is refreshed.
   @Column({ type: "timestamp", nullable: true })
   lastLogin!: Date;
+
+  @Column({
+    default: false,
+  })
+  isSuperAdminUser!: boolean;
 }
