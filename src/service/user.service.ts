@@ -24,7 +24,7 @@ export class UserService {
    * @param id The ID of the user we want to get.
    */
   public static async getUserByID(id: string): Promise<UserEntity | null> {
-    return UserEntity.findOneOrFail(id);
+    return UserEntity.findOneOrFail({where: [{id}]});
   }
 
   /**
@@ -100,7 +100,7 @@ export class UserService {
    * Ban a user account from access the systems by their ID and give a reason.
    * This will prevent any future logins to the system with the specified email address.
    * @param userId The ID of the user we want to ban.
-   * @param reason The reason for the ban that might be shown to the user if they attempt to login (or for our historical logs.)
+   * @param reason The reason for the ban that might be shown to the user if they attempt to log in (or for our historical logs.)
    */
   public static async banUserByIdWithReason(
     userId: string,

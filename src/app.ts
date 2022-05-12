@@ -1,6 +1,8 @@
 import "reflect-metadata";
 import { AppServer } from "./server";
 
+console.log("STARTED");
+
 /**
  * Bootstrap the application.
  */

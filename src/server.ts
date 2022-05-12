@@ -37,7 +37,7 @@ export class AppServer {
       console.log(
         "[APP_PORT] was not set in your environment, defaulting to 9110."
       );
-      APP_PORT = "9110";
+      APP_PORT = "9001";
     }
     app.listen(parseInt(APP_PORT));
     return APP_PORT;

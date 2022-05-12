@@ -1,5 +1,6 @@
-# auth-microservice-template
-A Reusable Auth Server Microservice Template Written for NodeJS.
+# Microservice Template
+A Reusable Auth Server Microservice Template Written for NodeJS. Also 
+can generally serve as a template for any microservice.
 
 ### Overview
 This auth microservice is meant to be used as a template. While it 
@@ -12,7 +13,7 @@ to help you get started, and then you build on top of it.
 After forking this template and cloning the repo down--you can easily get up and running with these few steps:
 
 #### Pre-Requisites
-   - This project uses [Node 14 LTS and NPM v8](https://nodejs.org/en/download/).
+   - This project recommends using [Node 16 LTS and NPM v8](https://nodejs.org/en/download/).
    - Access to a database (note that the database must be created with a name but the tables will get created automatically on first run.)
 
 #### 1. Environment Variables
@@ -66,7 +67,7 @@ and various admin actions such as: banning a user, unbanning a user, etc. An imp
 that I am assuming this microservice to only handle these specific features and to not be coupled to another 
 service directly. For that reason, I am not sending emails for verification (from this service) for example. The 
 general assumption is that this service might be connected to a Gateway API that will receive the data, and then 
-pass it forward into an Email Microservice. This can easily be modified and you can 100% add emails to this service easily. 
+pass it forward into an Email Microservice. This can easily be modified, and you can 100% add emails to this service easily. 
 
 Another important distinction is that this service does not deal with CORs or Cookies. Instead, we return JWTs 
 as JSON Payloads so the Gateway API can handle setting the secure Cookies for us. This service assumes a gateway 

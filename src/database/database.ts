@@ -10,6 +10,7 @@ export class AppDatabase {
    * Initialize our database connection and setup all of the entities.
    */
   public static async initializeDatabaseConnection(): Promise<void> {
+    console.log("HERE");
     const connection = await createConnection({
       ...AppDatabase.getDatabaseConfigOptions(),
       entities: AppDatabase.getDatabaseEntities(),
