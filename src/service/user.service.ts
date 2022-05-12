@@ -24,7 +24,7 @@ export class UserService {
    * @param id The ID of the user we want to get.
    */
   public static async getUserByID(id: string): Promise<UserEntity | null> {
-    return UserEntity.findOneOrFail({where: [{id}]});
+    return UserEntity.findOneOrFail({ where: [{ id }] });
   }
 
   /**

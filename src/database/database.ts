@@ -1,23 +1,25 @@
-import { createConnection } from "typeorm";
+import { DataSource } from "typeorm";
 import { UserEntity } from "../entities/user.entity";
 import { LogEntity } from "../entities/log.entity";
+import { getMigrationsArray } from "../migrations";
 
 /**
- * Handles all of the initial database setup logic.
+ * Handles all the initial database setup logic.
  */
 export class AppDatabase {
   /**
    * Initialize our database connection and setup all of the entities.
    */
   public static async initializeDatabaseConnection(): Promise<void> {
-    console.log("HERE");
-    const connection = await createConnection({
+    const dataSource = new DataSource({
       ...AppDatabase.getDatabaseConfigOptions(),
       entities: AppDatabase.getDatabaseEntities(),
+      migrations: getMigrationsArray(),
     });
+    const connection = await dataSource.initialize();
     if (process.env.NODE_ENV && process.env.NODE_ENV === "development") {
       console.log(
-        ` |> Database Connection Status: [${connection.isConnected}]`
+        ` |> Database Connection Status: [${connection.isInitialized}]`
       );
     }
   }

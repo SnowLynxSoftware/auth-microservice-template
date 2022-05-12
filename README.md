@@ -85,39 +85,46 @@ GET - http://localhost:9001/health
 **Register New User Account**
 ```
 POST - http://localhost:9001/auth/register
+Body: { email: string, password: string }
 ```
 
 **Verify New User Account**
 ```
 PUT - http://localhost:9001/auth/verify
+Body: { id: string, verificationToken: string }
 ```
 
 **Login w/ Email/Password**
 ```
 POST - http://localhost:9001/auth/login/basic
+Basic Auth Headers
 ```
 
 **Refresh Your Access Token**
 ```
 POST - http://localhost:9001/auth/token/refresh
+Body: { refreshToken: string }
 ```
 
 **Password Reset Request**
 ```
 POST - http://localhost:9001/auth/password/reset-request
+Body: { email: string }
 ```
 
 **Password Reset Verification**
 ```
 PUT - http://localhost:9001/auth/password/reset-verify
+Body: { id: string, password: string, email: string, verificationToken: string }
 ```
 
 **Ban A User**
 ```
 PUT - http://localhost:9001/admin/ban/:id
+Body: { id: string, reason: string }
 ```
 
-**Ban A User**
+**Unban A User**
 ```
 PUT - http://localhost:9001/admin/unban/:id
 ```

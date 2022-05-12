@@ -15,27 +15,27 @@ export class ErrorHandlerMiddleware {
   ) {
     try {
       let statusCode = 500;
-      let errDescription = "An error occurred in the server!";
-      let errDetails = err.message;
-      let errStack = err.stack;
-      let errCode = 0;
+      let description = "An error occurred in the server!";
+      let details = err.message;
+      let stack = err.stack;
+      let code = 0;
       switch (typeof err) {
         case typeof UnauthorizedError:
-          errDescription =
+          description =
             "You are not authenticated with the system! Please login!";
           statusCode = (err as UnauthorizedError).statusCode;
-          errDetails = (err as UnauthorizedError).message;
-          errStack = (err as UnauthorizedError).stack;
-          errCode = (err as UnauthorizedError).errorCode;
+          details = (err as UnauthorizedError).message;
+          stack = (err as UnauthorizedError).stack;
+          code = (err as UnauthorizedError).errorCode;
           break;
         default:
           break;
       }
       res.status(statusCode).json({
-        errDescription,
-        errDetails,
-        ...(process.env.NODE_ENV === "development" && { errStack }),
-        errCode,
+        description,
+        details,
+        ...(process.env.NODE_ENV === "development" && { stack }),
+        code,
       });
     } catch (error) {
       next(error);

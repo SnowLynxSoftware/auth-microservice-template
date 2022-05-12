@@ -127,6 +127,11 @@ export class AuthRouter extends BaseRouter implements IRoutable {
   ) {
     try {
       const resetRequestDetails = new UserPasswordResetRequestDTO(req.body);
+      if (!resetRequestDetails.email) {
+        throw new Error(
+          "Email is required when attempting a password reset request!"
+        );
+      }
       const response = await AuthManager.requestUserPasswordReset(
         resetRequestDetails
       );

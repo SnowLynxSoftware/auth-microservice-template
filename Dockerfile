@@ -1,6 +1,6 @@
-FROM morpheuszer0/node:14.19.0-slim
+FROM node:16.15.0-alpine3.15
 
-ENV PORT=9110
+ENV PORT=9001
 
 WORKDIR /opt/apps/auth-service
 COPY . .
